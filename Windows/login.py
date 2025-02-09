@@ -9,7 +9,7 @@ def verificar_login():
 
     # Cadena de conexión utilizando el formato de interpolación correcto
     conn_str = (
-        "DRIVER={ODBC Driver 17 for SQL Server};"
+        "DRIVER={ODBC Driver 18 for SQL Server};"
         "SERVER=DESKTOP-DK0D7AB;DATABASE=Northwind;"
         "UID=JOSHUA\\rugam;"  # Cambia si tu usuario o servidor es diferente
         "Trusted_Connection=yes;"
@@ -25,7 +25,6 @@ def verificar_login():
         if cursor.fetchone():
             ventana.destroy()  # Cerrar ventana de login
             iniciar_ventana_principal()  # Llamar a la función para abrir la ventana principal
-
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")
     
@@ -38,52 +37,60 @@ def verificar_login():
 
 def crear_new_account():
     from sign_up import sign_up
-    
+    # Aquí deberías invocar la función de registro para crear una nueva cuenta
 
 # Configuración de la ventana principal
 ventana = tk.Tk()
 ventana.title("GastoSmart - Inicio de Sesión")
-ventana.geometry("500x650")
-ventana.config(bg='#0f0c29')
+ventana.config(bg='#D97762') 
+
+# Centralizando ventana
+pantalla_ancho = ventana.winfo_screenwidth()
+pantalla_alto = ventana.winfo_screenheight()
+ventana_ancho = 480
+ventana_alto = 480
+posicion_x = int((pantalla_ancho - ventana_ancho) / 2)
+posicion_y = int((pantalla_alto - ventana_alto) / 2)
+ventana.geometry(f"{ventana_ancho}x{ventana_alto}+{posicion_x}+{posicion_y}")
 
 # Función para manejar el hover sobre los botones
 def on_enter(e):
-    e.widget['background'] = '#6d44b8'
+    e.widget['background'] = '#6D44B8'  # Color al pasar el mouse
 
 def on_leave(e):
-    e.widget['background'] = '#573b8a'
+    e.widget['background'] = '#573B8A'  # Color al salir el mouse
 
-# Frame principal
-frame = tk.Frame(ventana, bg='#573b8a', bd=5, relief='raised')
-frame.place(relx=0.5, rely=0.5, anchor='center', width=390, height=600)
+# Frame principal (formulario de login)
+frame = tk.Frame(ventana, bg='#F28D9F', bd=5, relief='raised', padx=20, pady=20)
+frame.place(relx=0.5, rely=0.5, anchor='center', width=390, height=400)
 
 # Etiqueta de título
-label_titulo = tk.Label(frame, text="Gasto Smart Login", bg='#573b8a', fg="white", font=("Jost", 22, "bold"))
+label_titulo = tk.Label(frame, text="GastoSmart Login", bg='#D93B58', fg="white", font=("Playfair Display", 22, "bold"))
 label_titulo.pack(pady=10)
 
 # Campo de entrada para el usuario
-entry_usuario = tk.Entry(frame, width=25, bg="#e0dede", border=0, font=("Jost", 12))
+entry_usuario = tk.Entry(frame, width=25, bg="#e0dede", border=0, font=("Jost", 12), relief='flat', highlightthickness=1, highlightbackground="#0378A6")
 entry_usuario.pack(pady=10)
 entry_usuario.insert(0, "")
 
 # Campo de entrada para la contraseña
-entry_contrasena = tk.Entry(frame, width=25, bg="#e0dede", border=0, show="*", font=("Jost", 12))
+entry_contrasena = tk.Entry(frame, width=25, bg="#e0dede", border=0, show="*", font=("Jost", 12), relief='flat', highlightthickness=1, highlightbackground="#0378A6")
 entry_contrasena.pack(pady=10)
 entry_contrasena.insert(0, "")
 
-boton_crear_cuenta = tk.Button(frame, text="Crear Cuenta", command= crear_new_account, width=20, height=2, bg="#573b8a", fg="white", font=("Jost", 12, "bold"), bd=0)
-boton_crear_cuenta.pack(pady=80, padx=40)
+# Botón de "Crear Cuenta"
+boton_crear_cuenta = tk.Button(frame, text="Crear Cuenta", command=crear_new_account, width=20, height=2, bg="#D93B58", fg="white", font=("Playfair Display", 12, "bold"), bd=0)
+boton_crear_cuenta.pack(pady=20)
 
 # Botón de inicio de sesión
-boton_login = tk.Button(frame, text="Iniciar Sesión", command=verificar_login, width=20, height=2, bg="#573b8a", fg="white", font=("Jost", 12, "bold"), bd=0)
-boton_login.pack(pady=40, padx=80)
+boton_login = tk.Button(frame, text="Iniciar Sesión", command=verificar_login, width=20, height=2, bg="#D93B58", fg="white", font=("Playfair Display", 12, "bold"), bd=0)
+boton_login.pack(pady=10)
 
 # Efecto hover en el botón
 boton_login.bind("<Enter>", on_enter)
 boton_login.bind("<Leave>", on_leave)
 
-
-
 # Iniciar la ventana principal
 ventana.mainloop()
+
 
