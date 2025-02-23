@@ -7,14 +7,14 @@ class Meta:
         ventana_metas.withdraw()  
         ventana_añadir_meta = tk.Toplevel()
         ventana_añadir_meta.title("Añadir Meta")
-        ventana_añadir_meta.geometry("400x500")
+        ventana_añadir_meta.geometry("500x520")
         ventana_añadir_meta.config(bg='#FFEBE5') 
 
         # Centralizando ventana
         pantalla_ancho = ventana_añadir_meta.winfo_screenwidth()
         pantalla_alto = ventana_añadir_meta.winfo_screenheight()
         ventana_ancho = 500
-        ventana_alto = 650
+        ventana_alto = 520
         posicion_x = int((pantalla_ancho - ventana_ancho) / 2)
         posicion_y = int((pantalla_alto - ventana_alto) / 2)
         ventana_añadir_meta.geometry(f"{ventana_ancho}x{ventana_alto}+{posicion_x}+{posicion_y}")
@@ -78,8 +78,8 @@ class Meta:
                 conexion.commit()
 
                 messagebox.showinfo("Éxito", "Meta añadida correctamente.")
-                ventana_añadir_meta.destroy()  # Cerrar ventana de añadir meta
-                ventana_metas.deiconify()  # Mostrar la ventana principal
+                ventana_añadir_meta.destroy() 
+                ventana_metas.deiconify() 
 
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo guardar la meta: {e}")
@@ -96,14 +96,14 @@ class Meta:
     def ver_metas(self, ventana_ver_metas):
             ventana_ver_metas = tk.Toplevel()
             ventana_ver_metas.title("Ver Metas")
-            ventana_ver_metas.geometry("1200x500")
+            ventana_ver_metas.geometry("500x520")
             ventana_ver_metas.config(bg='#FFEBE5')
 
             # Centralizando ventana
             pantalla_ancho = ventana_ver_metas.winfo_screenwidth()
             pantalla_alto = ventana_ver_metas.winfo_screenheight()
             ventana_ancho = 500
-            ventana_alto = 650
+            ventana_alto = 520
             posicion_x = int((pantalla_ancho - ventana_ancho) / 2)
             posicion_y = int((pantalla_alto - ventana_alto) / 2)
             ventana_ver_metas.geometry(f"{ventana_ancho}x{ventana_alto}+{posicion_x}+{posicion_y}")
@@ -112,7 +112,7 @@ class Meta:
             frame_tree.pack(fill="both", expand=True)
 
             tree = ttk.Treeview(frame_tree, columns=("Nombre", "Notas", "Categoría", "Cantidad Requerida", "Cantidad Acumulada", "Progreso"), show='headings')
-    
+
             tree.heading("Nombre", text="Nombre")
             tree.heading("Notas", text="Notas")
             tree.heading("Categoría", text="Categoría")
@@ -127,7 +127,7 @@ class Meta:
             tree.column("Cantidad Acumulada", width=100, anchor="center", stretch=True)
             tree.column("Progreso", width=100, anchor="center", stretch=True)
             tree.pack(fill="both", expand=True)
-
+            tk.Button(ventana_ver_metas, text="Volver", command=lambda: (ventana_ver_metas.destroy()), bg="#F28C8C", fg="white", font=("Jost", 14, "bold")).pack(pady=20)
             conn_str = (
                 "DRIVER={ODBC Driver 18 for SQL Server};"
                 "SERVER=DESKTOP-DK0D7AB;DATABASE=Northwind;"
@@ -146,11 +146,12 @@ class Meta:
                 nombre_meta, notas, categoria, cantidad_requerida, cantidad_acumulada = row
                 progreso = round((cantidad_acumulada / cantidad_requerida) * 100, 2) if cantidad_requerida > 0 else 0
                 tree.insert("", tk.END, values=(nombre_meta, notas, categoria, cantidad_requerida, cantidad_acumulada, f"{progreso}%"))
+            
 
             def actualizar_progreso():
                 selected_item = tree.selection()[0]
                 cantidad_acumulada = float(tree.item(selected_item)['values'][4])
-                cantidad_acumulada += 10  # Incrementa en 10 como ejemplo, puedes personalizar esto
+                cantidad_acumulada += 10  # Incrementa en 10, aun en proceso de trabajo
 
                 nombre_meta = tree.item(selected_item)['values'][0]
 
@@ -159,7 +160,7 @@ class Meta:
 
                 new_values = list(tree.item(selected_item)['values'])
                 new_values[4] = cantidad_acumulada
-                new_values[5] = f"{round((cantidad_acumulada / new_values[3]) * 100, 2)}%"
+                new_values[5] = f"{round((cantidad_acumulada / float(new_values[3])) * 100, 2)}%"
                 tree.item(selected_item, values=new_values)
 
             tk.Button(ventana_ver_metas, text="Actualizar Progreso", command=actualizar_progreso, bg="#F28C8C", fg="white", font=("Jost", 14, "bold")).pack(pady=10)
@@ -171,7 +172,7 @@ def iniciar_ventana_principal():
             
     meta_ventana_principal = tk.Tk()
     meta_ventana_principal.title("GastoSmart")
-    meta_ventana_principal.geometry("400x496")
+    meta_ventana_principal.geometry("500x520")
     meta_ventana_principal.config(bg='#FFEBE5')
 
     contenedor = tk.Frame(meta_ventana_principal)

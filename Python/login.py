@@ -1,30 +1,33 @@
 import pyodbc
 import tkinter as tk
 from tkinter import messagebox
-from main import iniciar_ventana_principal  # Importar la función correctamente
+from main import iniciar_ventana_principal
 
 def verificar_login():
     usuario = entry_usuario.get()
     contrasena = entry_contrasena.get()
 
-    # Cadena de conexión utilizando el formato de interpolación correcto
+    
     conn_str = (
         "DRIVER={ODBC Driver 18 for SQL Server};"
         "SERVER=DESKTOP-DK0D7AB;DATABASE=Northwind;"
-        "UID=JOSHUA\\rugam;"  # Cambia si tu usuario o servidor es diferente
+        "UID=JOSHUA\\rugam;"  
         "Trusted_Connection=yes;"
-        "TrustServerCertificate=yes;"  # Desactiva la verificación del certificado SSL
+        "TrustServerCertificate=yes;"  
     )
     
     try:
         conexion = pyodbc.connect(conn_str)
         cursor = conexion.cursor()
 
-        # Consulta para verificar las credenciales (ajusta según tu tabla Usuarios)
+        # Consulta para verificar las credenciales
         cursor.execute("SELECT * FROM dbo.Usuario_login WHERE usuario = ? AND contrasena = ?", (usuario, contrasena))
-        if cursor.fetchone():
-            ventana.destroy()  # Cerrar ventana de login
-            iniciar_ventana_principal()  # Llamar a la función para abrir la ventana principal
+        if usuario == "" or contrasena == "":
+                messagebox.showerror("Error", "Por Favor ingrese un nombre de usuario valido.")
+
+        elif cursor.fetchone():
+                ventana.destroy()  # Cerrar ventana de login
+                iniciar_ventana_principal()  
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")
     
@@ -37,7 +40,7 @@ def verificar_login():
 
 def crear_new_account():
     from sign_up import sign_up
-    # Aquí deberías invocar la función de registro para crear una nueva cuenta
+    sign_up(ventana)
 
 # Configuración de la ventana principal
 ventana = tk.Tk()
@@ -47,8 +50,8 @@ ventana.config(bg='#D97762')
 # Centralizando ventana
 pantalla_ancho = ventana.winfo_screenwidth()
 pantalla_alto = ventana.winfo_screenheight()
-ventana_ancho = 480
-ventana_alto = 480
+ventana_ancho = 500
+ventana_alto = 520
 posicion_x = int((pantalla_ancho - ventana_ancho) / 2)
 posicion_y = int((pantalla_alto - ventana_alto) / 2)
 ventana.geometry(f"{ventana_ancho}x{ventana_alto}+{posicion_x}+{posicion_y}")

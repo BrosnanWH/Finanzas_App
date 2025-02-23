@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import meta
 from meta import Meta
-
+from pagos import Pagos_calendario
 
 def iniciar_ventana_principal():
     # Configuración de la ventana principal 
@@ -30,7 +29,7 @@ def iniciar_ventana_principal():
     ventana_registro_gastos = tk.Frame(notebook, bg='#1a3355')
 
     notebook.add(ventana_metas, text="Metas Financieras")
-    notebook.add(ventana_calendario, text="Calendario de Pagos")
+    notebook.add(ventana_calendario, text="Pagos")
     notebook.add(ventana_estadisticas, text="Estadísticas de Gastos")
     notebook.add(ventana_registro_gastos, text="Registro de Gastos")
 
@@ -46,12 +45,20 @@ def iniciar_ventana_principal():
     boton_ver_metas.pack(pady=10)
 
     # Contenido de la ventana de Calendario
-    label_calendario = tk.Label(ventana_calendario, text="Calendario de Pagos", font=("Jost", 20, "bold"), fg="white", bg='#2a4e85')
-    label_calendario.pack(pady=20)
+    label_pagos = tk.Label(ventana_calendario, text="Pagos", font=("Jost", 20, "bold"), fg="white", bg='#2a4e85')
+    label_pagos.pack(pady=20)
+
+    pagos_calendario = Pagos_calendario()
 
     # Botón para ir a la ventana de Calendario
-    boton_ir_estadisticas = tk.Button(ventana_calendario, text="Ir a Calendario", command=lambda: mostrar_ventana(ventana_estadisticas))
-    boton_ir_estadisticas.pack(pady=10)
+    boton_agregar_pago = tk.Button(ventana_calendario, text="Agregar Pago", command=pagos_calendario.iniciar_ventana_calendario, bg="#F28C8C", fg="white", font=("Jost", 14, "bold"))
+    boton_agregar_pago.pack(pady=5)
+
+    label_calendario_pagos = tk.Label(ventana_calendario, text="Calendario de Pagos", font=("Jost", 20, "bold"), fg="white", bg='#2a4e85')
+    label_calendario_pagos.pack(pady=30)
+
+    boton_ver_pagos = tk.Button(ventana_calendario, text="Ver Pagos", command=lambda: pagos_calendario.ver_pagos(ventana_principal), bg="#F28C8C", fg="white", font=("Jost", 14, "bold"))
+    boton_ver_pagos.pack(pady=5)
 
     # Contenido de la ventana de Estadísticas
     label_estadisticas = tk.Label(ventana_estadisticas, text="Estadísticas de Gastos", font=("Jost", 20, "bold"), fg="white", bg='#3f64a0')
@@ -75,3 +82,8 @@ def iniciar_ventana_principal():
 # Función para cambiar entre las distintas ventanas
 def mostrar_ventana(ventana):
     ventana.tkraise()
+
+# Crear la ventana principal y llamar a la función de inicio
+if __name__ == "__main__":
+    iniciar_ventana_principal()
+
