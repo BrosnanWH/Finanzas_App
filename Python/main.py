@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from meta import Meta
 from pagos import Pagos_calendario
+from registro_gastos import RegistroGastos
+from estadisticas_gastos import EstadisticasGastos
 
 def iniciar_ventana_principal():
     # Configuración de la ventana principal 
@@ -30,8 +32,8 @@ def iniciar_ventana_principal():
 
     notebook.add(ventana_metas, text="Metas Financieras")
     notebook.add(ventana_calendario, text="Pagos")
-    notebook.add(ventana_estadisticas, text="Estadísticas de Gastos")
     notebook.add(ventana_registro_gastos, text="Registro de Gastos")
+    notebook.add(ventana_estadisticas, text="Estadisticas de Gastos")
 
     label_metas = tk.Label(ventana_metas, text="Metas Financieras", font=("Jost", 20, "bold"), fg="white", bg='#573b8a')
     label_metas.pack(pady=20)
@@ -57,24 +59,39 @@ def iniciar_ventana_principal():
     label_calendario_pagos = tk.Label(ventana_calendario, text="Calendario de Pagos", font=("Jost", 20, "bold"), fg="white", bg='#2a4e85')
     label_calendario_pagos.pack(pady=30)
 
-    boton_ver_pagos = tk.Button(ventana_calendario, text="Ver Pagos", command=lambda: pagos_calendario.ver_pagos(ventana_principal), bg="#F28C8C", fg="white", font=("Jost", 14, "bold"))
+    boton_ver_pagos = tk.Button(ventana_calendario, text="Ver Pagos", command=pagos_calendario.ver_pagos, bg="#F28C8C", fg="white", font=("Jost", 14, "bold"))
     boton_ver_pagos.pack(pady=5)
 
-    # Contenido de la ventana de Estadísticas
+    
     label_estadisticas = tk.Label(ventana_estadisticas, text="Estadísticas de Gastos", font=("Jost", 20, "bold"), fg="white", bg='#3f64a0')
     label_estadisticas.pack(pady=20)
 
-    # Botón para ir a la ventana de Registro de Gastos
-    boton_ir_registro_gastos = tk.Button(ventana_estadisticas, text="Ir a Registro de Gastos", command=lambda: mostrar_ventana(ventana_registro_gastos))
+    # Botón para abrir registro de gastos
+    boton_ir_registro_gastos = tk.Button(
+        ventana_registro_gastos, 
+        text="Ir a Registro de Gastos", 
+        command=lambda: RegistroGastos(),  # Llamada al registro de gastos
+        bg="#F28C8C", 
+        fg="white", 
+        font=("Jost", 14, "bold")
+    )
     boton_ir_registro_gastos.pack(pady=10)
 
-    # Contenido de la ventana de Registro de Gastos
-    label_registro_gastos = tk.Label(ventana_registro_gastos, text="Registro de Gastos", font=("Jost", 20, "bold"), fg="white", bg='#1a3355')
-    label_registro_gastos.pack(pady=20)
+    # Contenido de la ventana de stats_gastos
+    label_stats_gastos = tk.Label(ventana_registro_gastos, text="Estadisticas de gastos", font=("Jost", 20, "bold"), fg="white", bg='#1a3355')
+    label_stats_gastos.pack(pady=20)
+    
+    # Botón para abrir estadísticas de gastos
+    boton_ir_stats_gastos = tk.Button(
+        ventana_estadisticas, 
+        text="Ir a Estadísticas de Gastos", 
+        command=lambda: EstadisticasGastos(),  # Llamada al método de generar gráfico
+        bg="#F28C8C", 
+        fg="white", 
+        font=("Jost", 14, "bold")
+    )
+    boton_ir_stats_gastos.pack(pady=10)
 
-    # Botón para volver a la ventana de Metas
-    boton_volver_metas = tk.Button(ventana_registro_gastos, text="Ir a Registro de Gastos", command=lambda: mostrar_ventana(ventana_metas))
-    boton_volver_metas.pack(pady=10)
 
     # Iniciar la aplicación
     ventana_principal.mainloop()

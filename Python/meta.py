@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pyodbc
+from tkinter import simpledialog
+
 
 class Meta:
     def agregar_meta(self, ventana_metas):
@@ -102,7 +104,7 @@ class Meta:
             # Centralizando ventana
             pantalla_ancho = ventana_ver_metas.winfo_screenwidth()
             pantalla_alto = ventana_ver_metas.winfo_screenheight()
-            ventana_ancho = 500
+            ventana_ancho = 700
             ventana_alto = 520
             posicion_x = int((pantalla_ancho - ventana_ancho) / 2)
             posicion_y = int((pantalla_alto - ventana_alto) / 2)
@@ -141,31 +143,108 @@ class Meta:
             cursor.execute("SELECT * FROM dbo.MetasFinancieras")
             rows = cursor.fetchall()
 
+            # Definir estilos de colores para las metas
+            tree.tag_configure("pendiente", background="#FFFACD")  # Amarillo claro
+            tree.tag_configure("completo", background="#98FB98")  # Verde claro
+
+            # Obtener las metas de la base de datos
+            cursor.execute("SELECT * FROM dbo.MetasFinancieras")
+            rows = cursor.fetchall()
+
             for row in rows:
-                 
                 nombre_meta, notas, categoria, cantidad_requerida, cantidad_acumulada = row
                 progreso = round((cantidad_acumulada / cantidad_requerida) * 100, 2) if cantidad_requerida > 0 else 0
-                tree.insert("", tk.END, values=(nombre_meta, notas, categoria, cantidad_requerida, cantidad_acumulada, f"{progreso}%"))
+
+                # Definir estado y color según el progreso
+                if progreso == 100:
+                    estado = "Completo"
+                    tag = "completo"
+                else:
+                    estado = "Pendiente"
+                    tag = "pendiente"
+
+                # Insertar datos en la tabla con el color apropiado
+                tree.insert("", tk.END, values=(nombre_meta, notas, categoria, cantidad_requerida, cantidad_acumulada, f"{progreso}% - {estado}"), tags=(tag,))
             
 
+            def eliminar_meta():
+                selected_item = tree.selection()
+
+                if not selected_item:
+                    messagebox.showerror("Error", "Por favor, selecciona una meta para eliminar.")
+                    return
+
+                selected_item = selected_item[0]
+                valores = tree.item(selected_item)['values']
+                nombre_meta = valores[0]  # Extrae el nombre de la meta
+
+                confirmacion = messagebox.askyesno("Eliminar Meta", f"¿Seguro que deseas eliminar la meta '{nombre_meta}'?")
+
+                if confirmacion:
+                    try:
+                        cursor.execute("DELETE FROM dbo.MetasFinancieras WHERE nombre_meta = ?", (nombre_meta,))
+                        conexion.commit()
+
+                        tree.delete(selected_item)  # Elimina de la interfaz gráfica
+                        messagebox.showinfo("Éxito", f"La meta '{nombre_meta}' ha sido eliminada correctamente.")
+
+                    except Exception as e:
+                        messagebox.showerror("Error", f"No se pudo eliminar la meta: {e}")
+
+
             def actualizar_progreso():
-                selected_item = tree.selection()[0]
-                cantidad_acumulada = float(tree.item(selected_item)['values'][4])
-                cantidad_acumulada += 10  # Incrementa en 10, aun en proceso de trabajo
+                selected_item = tree.selection()
+                
+                if not selected_item:
+                    messagebox.showerror("Error", "Por favor, selecciona una meta para actualizar.")
+                    return
 
-                nombre_meta = tree.item(selected_item)['values'][0]
+                selected_item = selected_item[0]
+                valores = tree.item(selected_item)['values']
+                
+                nombre_meta = valores[0]
+                cantidad_requerida = float(valores[3])
+                cantidad_acumulada_actual = float(valores[4])
 
-                cursor.execute("UPDATE dbo.MetasFinancieras SET cantidad_acumulada = ? WHERE nombre_meta = ?", (cantidad_acumulada, nombre_meta))
+                if cantidad_acumulada_actual >= cantidad_requerida:
+                    messagebox.showinfo("Completado", "Esta meta ya está al 100% y no se puede modificar.")
+                    return
+
+                cantidad_input = simpledialog.askfloat("Actualizar Progreso", 
+                                                    "Ingresa la cantidad a ajustar (+ o -):", 
+                                                    minvalue=-cantidad_acumulada_actual)
+
+                if cantidad_input is None:
+                    return  
+
+                nueva_cantidad_acumulada = cantidad_acumulada_actual + cantidad_input
+
+                # Asegurar que la cantidad acumulada no exceda la cantidad requerida
+                nueva_cantidad_acumulada = min(max(nueva_cantidad_acumulada, 0), cantidad_requerida)
+                progreso = round((nueva_cantidad_acumulada / cantidad_requerida) * 100, 2)
+
+                # Actualizar en la base de datos
+                cursor.execute("UPDATE dbo.MetasFinancieras SET cantidad_acumulada = ? WHERE nombre_meta = ?", 
+                            (nueva_cantidad_acumulada, nombre_meta))
                 conexion.commit()
 
-                new_values = list(tree.item(selected_item)['values'])
-                new_values[4] = cantidad_acumulada
-                new_values[5] = f"{round((cantidad_acumulada / float(new_values[3])) * 100, 2)}%"
-                tree.item(selected_item, values=new_values)
+                # Definir estado y color según el nuevo progreso
+                estado = "Completo" if progreso == 100 else "Pendiente"
+                tag = "completo" if progreso == 100 else "pendiente"
+
+                # Actualizar en la tabla visual
+                new_values = list(valores)
+                new_values[4] = nueva_cantidad_acumulada
+                new_values[5] = f"{progreso}% - {estado}"
+
+                tree.item(selected_item, values=new_values, tags=(tag,))
+
+                messagebox.showinfo("Éxito", "Progreso actualizado correctamente.")
 
             tk.Button(ventana_ver_metas, text="Actualizar Progreso", command=actualizar_progreso, bg="#F28C8C", fg="white", font=("Jost", 14, "bold")).pack(pady=10)
+            tk.Button(ventana_ver_metas, text="Elmiminar meta", command=eliminar_meta, bg="#F28C8C", fg="white", font=("Jost", 14, "bold")).pack(pady=20, padx=10)
 
-            ventana_ver_metas.mainloop()
+            
 
 def iniciar_ventana_principal():
         
